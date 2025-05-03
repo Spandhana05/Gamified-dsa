@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Interactive Searching Game</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #fceabb, #f8b500);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 800px;
+      width: 100%;
+      padding: 2rem;
+      margin-top: 30px;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 1rem;
+    }
+
+    input, button {
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      margin: 0.5rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      outline: none;
+    }
+
+    button {
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      transition: transform 0.2s ease, background 0.3s;
+    }
+
+    button:hover {
+      background-color: #3c9443;
+      transform: scale(1.05);
+    }
+
+    .box-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 1.5rem;
+      gap: 12px;
+    }
+
+    .box {
+      width: 60px;
+      height: 60px;
+      background: #ddd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 14px;
+      transition: transform 0.4s ease, background 0.4s ease, box-shadow 0.4s ease;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .box.highlight {
+      animation: glow 0.6s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 10px #ff9800, 0 0 20px #ff9800;
+        transform: scale(1);
+      }
+      to {
+        box-shadow: 0 0 20px #ff5722, 0 0 40px #ff5722;
+        transform: scale(1.08);
+      }
+    }
+
+    .box.found {
+      background: linear-gradient(to right, #43e97b, #38f9d7);
+      transform: scale(1.2);
+      animation: pop 0.5s ease;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.4); }
+      100% { transform: scale(1.2); }
+    }
+
+    .buttons {
+      margin-top: 1rem;
+    }
+
+    #description {
+      margin-top: 1.5rem;
+      font-size: 1.2rem;
+      color: #333;
+    }
+
+    .shake {
+      animation: shake 0.5s;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+
+    .leaderboard {
+      margin-top: 2rem;
+      background-color: #fff;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    #leaderboardList {
+      list-style: none;
+      padding: 0;
+      text-align: left;
+    }
+
+    .download-btn {
+      margin-top: 1rem;
+      background-color: #2196F3;
+    }
+
+    .download-btn:hover {
+      background-color: #0b7dda;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #f44336;
+      animation: fall 1s ease-out forwards;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0); opacity: 1; }
+      100% { transform: translateY(300px) rotate(360deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎯 Interactive Searching Game</h1>
+    <input type="text" id="playerName" placeholder="Enter your name" /><br>
+    <input type="text" id="numbersInput" placeholder="Enter numbers (e.g. 3,5,8)" oninput="generateBoxes()" /><br>
+    <input type="text" id="searchTarget" placeholder="Enter number to search" />
+
+    <div class="buttons">
+      <button onclick="startSearch('linear')">Linear Search</button>
+      <button onclick="startSearch('binary')">Binary Search</button>
+    </div>
+
+    <div class="box-container" id="boxContainer"></div>
+    <div id="description"></div>
+
+    <div class="leaderboard">
+      <h3>🏆 Leaderboard</h3>
+      <ul id="leaderboardList"></ul>
+      <button class="download-btn" onclick="downloadLeaderboard()">Download Leaderboard</button>
+    </div>
+  </div>
+
+  <script>
+    function getRandomGradient() {
+      const gradients = [
+        ['#ff6a00', '#ee0979'], ['#00c9ff', '#92fe9d'],
+        ['#f7971e', '#ffd200'], ['#ff758c', '#ff7eb3'],
+        ['#00c3ff', '#ffff1c'], ['#fc466b', '#3f5efb']
+      ];
+      const pair = gradients[Math.floor(Math.random() * gradients.length)];
+      return `linear-gradient(to bottom right, ${pair[0]}, ${pair[1]})`;
+    }
+
+    function generateBoxes() {
+      const input = document.getElementById("numbersInput").value;
+      const values = input.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+      const container = document.getElementById("boxContainer");
+      container.innerHTML = '';
+      values.forEach(value => {
+        const box = document.createElement("div");
+        box.className = "box";
+        box.textContent = value;
+        box.style.background = getRandomGradient();
+        container.appendChild(box);
+      });
+    }
+
+    async function startSearch(type) {
+      const name = document.getElementById("playerName").value.trim();
+      const target = parseInt(document.getElementById("searchTarget").value.trim());
+      if (!name) return alert("Please enter your name.");
+      if (isNaN(target)) return alert("Enter a valid number to search.");
+
+      const boxes = Array.from(document.querySelectorAll(".box"));
+      const values = boxes.map(box => parseInt(box.textContent));
+      if (values.length === 0) return alert("Please enter numbers.");
+
+      const desc = document.getElementById("description");
+      desc.classList.remove("shake");
+      desc.textContent = type === "linear"
+        ? "🔁 Linear Search checks each element one-by-one."
+        : "📐 Binary Search requires sorted input and checks mid-point.";
+
+      let foundIndex = -1;
+      const start = performance.now();
+
+      if (type === "linear") {
+        for (let i = 0; i < values.length; i++) {
+          boxes[i].classList.add("highlight");
+          await delay(400);
+          boxes[i].classList.remove("highlight");
+          if (values[i] === target) {
+            foundIndex = i;
+            break;
+          }
+        }
+      } else {
+        const sorted = [...values].sort((a, b) => a - b);
+        const sortedBoxes = sorted.map(v => boxes[values.indexOf(v)]);
+        let left = 0, right = sorted.length - 1;
+        while (left <= right) {
+          const mid = Math.floor((left + right) / 2);
+          const box = sortedBoxes[mid];
+          box.classList.add("highlight");
+          await delay(400);
+          box.classList.remove("highlight");
+          if (sorted[mid] === target) {
+            foundIndex = values.indexOf(sorted[mid]);
+            break;
+          } else if (sorted[mid] < target) {
+            left = mid + 1;
+          } else {
+            right = mid - 1;
+          }
+        }
+      }
+
+      const timeTaken = Math.round(performance.now() - start);
+      showResult(foundIndex, boxes, target, name, type, timeTaken);
+    }
+
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function showResult(index, boxes, target, name, type, time) {
+      const desc = document.getElementById("description");
+
+      if (index !== -1) {
+        boxes[index].classList.add("found");
+        desc.innerHTML += `<br><strong>✅ Element ${target} found at position ${index + 1}.</strong>`;
+        throwConfetti();
+      } else {
+        desc.innerHTML += `<br><strong class="shake">❌ Element ${target} not found.</strong>`;
+        desc.classList.add("shake");
+      }
+
+      updateLeaderboard(name, time, type);
+    }
+
+    function throwConfetti() {
+      for (let i = 0; i < 25; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 1000);
+      }
+    }
+
+    function updateLeaderboard(name, time, type) {
+      const leaderboard = document.getElementById("leaderboardList");
+      const entry = document.createElement("li");
+      entry.textContent = `${name} - ${time}ms (${type} search)`;
+      leaderboard.appendChild(entry);
+    }
+
+    function downloadLeaderboard() {
+      const list = document.getElementById("leaderboardList");
+      let data = '';
+      for (let i = 0; i < list.children.length; i++) {
+        data += list.children[i].textContent + '\n';
+      }
+      const blob = new Blob([data], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'leaderboard.txt';
+      link.click();
+    }
+  </script>
+</body>
+</html>

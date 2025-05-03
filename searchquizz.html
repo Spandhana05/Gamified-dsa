@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DSA Quiz with Progress Bar</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #83a4d4, #b6fbff);
+      text-align: center;
+      padding: 20px;
+    }
+    #quiz-container {
+      margin-top: 50px;
+    }
+    button {
+      margin: 10px;
+      padding: 12px 24px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #388e3c;
+    }
+    .progress-bar {
+      width: 80%;
+      background-color: #ddd;
+      border-radius: 10px;
+      margin: 20px auto;
+      height: 20px;
+      overflow: hidden;
+    }
+    .progress {
+      height: 100%;
+      width: 0%;
+      background-color: #4caf50;
+      border-radius: 10px;
+      transition: width 0.5s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🚀 Test Your DSA Knowledge!</h1>
+
+  <div class="progress-bar">
+    <div class="progress" id="progress"></div>
+  </div>
+
+  <div id="quiz-container"></div>
+
+  <script>
+    const quizData = [
+      {
+        question: "Linear search is also called------",
+        options: ["Random search", "Sequential Search", "Perfect Search", "None"],
+        correct: "Sequential search"
+      },
+      {
+        question: "The average number of key comparisons done in a successful sequential search in a list of length n is",
+        options: ["log n", "(n-1)/2", "n/2", "(n+1)/2"],
+        correct: "(n+1)/2"
+      },
+      {
+        question: "The necessary condition for using binary search in an array is :-",
+        options: ["The array should not be too long", "The array should of more size", "The array should be sorted", "None of these"],
+        correct: "The array should be sorted "
+      },
+      {
+        question: "The average case occurs in the Linear Search Algorithm when:",
+        options: ["The item to be searched is in some where middle of the Array", "The item to be searched is not in the array", "The item to be searched is in the last of the array", "The item to be searched is either in the last or not in the array"],
+        correct: "The item to be searched is in some where middle of the Array"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const container = document.getElementById('quiz-container');
+      const questionData = quizData[currentQuestion];
+      container.innerHTML = `
+        <h2>${questionData.question}</h2>
+        ${questionData.options.map(option => `
+          <button onclick="checkAnswer('${option}')">${option}</button>
+        `).join('')}
+      `;
+
+      updateProgressBar();
+    }
+
+    function checkAnswer(selectedOption) {
+      const questionData = quizData[currentQuestion];
+      if (selectedOption === questionData.correct) {
+        alert("✅ Correct!");
+        score++;
+      } else {
+        alert(`❌ Wrong! Correct Answer: ${questionData.correct}`);
+      }
+
+      currentQuestion++;
+      if (currentQuestion < quizData.length) {
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function updateProgressBar() {
+      const progress = document.getElementById('progress');
+      const percent = ((currentQuestion) / quizData.length) * 100;
+      progress.style.width = `${percent}%`;
+    }
+
+    function showResult() {
+  const container = document.getElementById('quiz-container');
+  updateProgressBar();
+  document.getElementById('progress').style.width = `100%`;
+  container.innerHTML = `
+    <h2>🎉 Quiz Completed!</h2>
+    <p>You scored <strong>${score}</strong> out of <strong>${quizData.length}</strong>!</p>
+    <button onclick="restartQuiz()">Play Again</button>
+    <button onclick="goBack()">Go Back</button>
+  `;
+}
+function goBack() {
+  // Redirect user to the homepage or another section
+  window.location.href = "arrays.html"; 
+}
+
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      loadQuestion();
+    }
+
+    // Start the quiz
+    loadQuestion();
+  </script>
+
+</body>
+</html>
