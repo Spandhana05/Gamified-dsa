@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DSA Quiz with Progress Bar</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #83a4d4, #b6fbff);
+      text-align: center;
+      padding: 20px;
+    }
+    #quiz-container {
+      margin-top: 50px;
+    }
+    button {
+      margin: 10px;
+      padding: 12px 24px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #388e3c;
+    }
+    .progress-bar {
+      width: 80%;
+      background-color: #ddd;
+      border-radius: 10px;
+      margin: 20px auto;
+      height: 20px;
+      overflow: hidden;
+    }
+    .progress {
+      height: 100%;
+      width: 0%;
+      background-color: #4caf50;
+      border-radius: 10px;
+      transition: width 0.5s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🚀 Test Your Trees Knowledge!</h1>
+
+  <div class="progress-bar">
+    <div class="progress" id="progress"></div>
+  </div>
+
+  <div id="quiz-container"></div>
+
+  <script>
+    const quizData = [
+      {
+        question: "What is the maximum number of children a binary tree node can have?",
+        options: ["1", "2", "3", "4"],
+        correct: "2"
+      },
+      {
+        question: "Which traversal visits nodes in the order: left subtree, root, right subtree?",
+        options: ["Preorder", "Inorder", "Postorder", "Level Order"],
+        correct: "Inorder"
+      },
+      {
+        question: "In a Binary Search Tree (BST), for any node, all nodes in the left subtree are ___ than the node.",
+        options: ["greater", "equal", "less", "random"],
+        correct: "less"
+      },
+      {
+        question: "What data structure is commonly used to implement tree traversals iteratively?",
+        options: ["Queue", "Stack", "Heap", "Linked List"],
+        correct: "Stack"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const container = document.getElementById('quiz-container');
+      const questionData = quizData[currentQuestion];
+      container.innerHTML = `
+        <h2>${questionData.question}</h2>
+        ${questionData.options.map(option => `
+          <button onclick="checkAnswer('${option}')">${option}</button>
+        `).join('')}
+      `;
+
+      updateProgressBar();
+    }
+
+    function checkAnswer(selectedOption) {
+      const questionData = quizData[currentQuestion];
+      if (selectedOption === questionData.correct) {
+        alert("✅ Correct!");
+        score++;
+      } else {
+        alert(`❌ Wrong! Correct Answer: ${questionData.correct}`);
+      }
+
+      currentQuestion++;
+      if (currentQuestion < quizData.length) {
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function updateProgressBar() {
+      const progress = document.getElementById('progress');
+      const percent = ((currentQuestion) / quizData.length) * 100;
+      progress.style.width = `${percent}%`;
+    }
+
+    function showResult() {
+      const container = document.getElementById('quiz-container');
+      updateProgressBar();
+      document.getElementById('progress').style.width = `100%`;
+      container.innerHTML = `
+        <h2>🎉 Quiz Completed!</h2>
+        <p>You scored <strong>${score}</strong> out of <strong>${quizData.length}</strong>!</p>
+        <button onclick="restartQuiz()">Play Again</button>
+        <button onclick="goBack()">Go Back</button>
+      `;
+    }
+
+    function goBack() {
+      // Redirect user to the homepage or another section
+      window.location.href = "trees.html"; 
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      loadQuestion();
+    }
+
+    // Start the quiz
+    loadQuestion();
+  </script>
+
+</body>
+</html>
