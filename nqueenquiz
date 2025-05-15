@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>N-Queens Quiz with Progress Bar</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #83a4d4, #b6fbff);
+      text-align: center;
+      padding: 20px;
+    }
+    #quiz-container {
+      margin-top: 50px;
+    }
+    button {
+      margin: 10px;
+      padding: 12px 24px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #388e3c;
+    }
+    .progress-bar {
+      width: 80%;
+      background-color: #ddd;
+      border-radius: 10px;
+      margin: 20px auto;
+      height: 20px;
+      overflow: hidden;
+    }
+    .progress {
+      height: 100%;
+      width: 0%;
+      background-color: #4caf50;
+      border-radius: 10px;
+      transition: width 0.5s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🚀 Test Your N-Queens Knowledge!</h1>
+
+  <div class="progress-bar">
+    <div class="progress" id="progress"></div>
+  </div>
+
+  <div id="quiz-container"></div>
+
+  <script>
+    const quizData = [
+      {
+        question: "What is the primary goal of the N-Queens problem?",
+        options: [
+          "Place N queens on a chessboard so none attack each other",
+          "Capture all queens in minimum moves",
+          "Find shortest path between queens",
+          "Count number of queens on the board"
+        ],
+        correct: "Place N queens on a chessboard so none attack each other"
+      },
+      {
+        question: "Which algorithm technique is commonly used to solve the N-Queens problem?",
+        options: [
+          "Greedy Algorithm",
+          "Dynamic Programming",
+          "Backtracking",
+          "Divide and Conquer"
+        ],
+        correct: "Backtracking"
+      },
+      {
+        question: "What is the size of the chessboard in the classic N-Queens problem?",
+        options: [
+          "8x8",
+          "N x N",
+          "10x10",
+          "Any rectangular board"
+        ],
+        correct: "N x N"
+      },
+      {
+        question: "How does backtracking help in solving the N-Queens problem?",
+        options: [
+          "By placing queens randomly",
+          "By checking all possible configurations systematically",
+          "By sorting the queens by position",
+          "By placing all queens in the first row"
+        ],
+        correct: "By checking all possible configurations systematically"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const container = document.getElementById('quiz-container');
+      const questionData = quizData[currentQuestion];
+      container.innerHTML = `
+        <h2>${questionData.question}</h2>
+        ${questionData.options.map(option => `
+          <button onclick="checkAnswer('${option}')">${option}</button>
+        `).join('')}
+      `;
+
+      updateProgressBar();
+    }
+
+    function checkAnswer(selectedOption) {
+      const questionData = quizData[currentQuestion];
+      if (selectedOption === questionData.correct) {
+        alert("✅ Correct!");
+        score++;
+      } else {
+        alert(`❌ Wrong! Correct Answer: ${questionData.correct}`);
+      }
+
+      currentQuestion++;
+      if (currentQuestion < quizData.length) {
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function updateProgressBar() {
+      const progress = document.getElementById('progress');
+      const percent = ((currentQuestion) / quizData.length) * 100;
+      progress.style.width = `${percent}%`;
+    }
+
+    function showResult() {
+      const container = document.getElementById('quiz-container');
+      updateProgressBar();
+      document.getElementById('progress').style.width = `100%`;
+      container.innerHTML = `
+        <h2>🎉 Quiz Completed!</h2>
+        <p>You scored <strong>${score}</strong> out of <strong>${quizData.length}</strong>!</p>
+        <button onclick="restartQuiz()">Play Again</button>
+        <button onclick="goBack()">Go Back</button>
+      `;
+    }
+
+    function goBack() {
+      window.location.href = "recurssion.html"; 
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      loadQuestion();
+    }
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
